@@ -1,49 +1,62 @@
 import random
-from typing import List
+from typing import List, Dict
 from datetime import datetime
 
 class MarioExtravaganza:
-	def __init__(self):
-		self.races = 0
 
-	# Splits names into even numbers (if possible) and puts each into
-	# there own list multiplied by the number of races. 
-	# Returns 2d list of results 
-	def listBuild(self, names: str, races: int) -> List[List[str]]:
+	# Splits names into even numbers (if possible) and puts each 
+	# team into a dictionary where the key is the player value
+	# and the value is the player name. Appends dictionary to list
+	def listBuild(self, names: str) -> List[dict]:
 		nameLst = names.replace(" ","").split(",")
-		builtLst = list()
-		self.races = races
 
-		for i in range(0, len(nameLst), 2):
-			team = nameLst[i: i+2]
-			team *= races
-			builtLst.append(team)
+		if len(nameLst) == 8:
+			dictLst = list()
+
+			for i in range(0, len(nameLst), 2):
+				team = nameLst[i: i+2]
+				teamDict = {'0': team[0], '1': team[1]} 
+				dictLst.append(teamDict)
+		else:
+			raise Exception("There must be eight players!!")
 		
-		return builtLst
+		return dictLst
 
-	# Randomly shuffles each list in the 2d teams list parameter
-	# Returns shuffled 2d list
-	def listShuffle(self, teams: List[List[str]]) -> List[List[str]]:
-		shuffled = list()
+	#uses binary values to assign players to a race
+	# returns 2d list of strings with player lineup
+	# for each race 
+	def lineupBuild(self, teams: List[dict]) -> List[List[str]]:
+		lineup = list()
+		
+		# loop through 16 binary variations
+		for i in range(0,16):
+			tmpLst = list()
+			binList = list('{0:04b}'.format(i))
 
-		for team in teams:
-			random.shuffle(team)
-			shuffled.append(team)
+			# select player from each team based on binary value
+			for j in range(0,4):
+				player = teams[j][binList[j]]
+				tmpLst.append(player)
+			
+			lineup.append(tmpLst)
+		
+		# multiply list by 3 and then shuffle
+		lineup *= 3
+		random.shuffle(lineup)
+		return lineup
 
-		return shuffled
-
+				
+	# combines team list to string where each line is a race
+	# and the lineup for the race
 	def displayTeams(self, teams: List[List[str]]) -> str:
 		displayStr = ""
+		count = 0
 
-		for i in range(self.races):
-			tmpStr = ""
+		for team in teams:
+			count += 1
+			tmpStr = ", ".join(team)
 
-			for j in range(len(teams)):
-				tmpStr += "{}, ".format(teams[j][i])
-
-			tmpStr = tmpStr[:-2]
-			displayStr += "Race {}: {}\n".format(i+1, tmpStr)
+			displayStr += "Race {}: {}\n".format(count, tmpStr)
 			tmpStr = ""
 
 		return displayStr
-
