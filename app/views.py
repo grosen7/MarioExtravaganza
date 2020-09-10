@@ -1,12 +1,11 @@
 from flask import Flask, render_template, request, url_for, flash, redirect, Response, session, send_from_directory
 from flask_bootstrap import Bootstrap
 import os
-from app import app
-from app.classes.MarioExtravaganza import MarioExtravaganza
+from classes.MarioExtravaganza import MarioExtravaganza
 
+app = Flask(__name__)
 Bootstrap(app)
-app.secret_key = "secret"
-# app.secret_key = os.environ["SECRET"]
+app.secret_key = os.environ["SECRET"]
 
 ## MAIN PAGE
 @app.route("/", methods = ["GET", "POST"])
