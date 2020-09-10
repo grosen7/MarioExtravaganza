@@ -1,5 +1,5 @@
-import random, math
-from typing import List, Dict
+import random, math, requests, io, csv
+from typing import List, Dict, IO
 from datetime import datetime
 
 class MarioExtravaganza:
@@ -11,9 +11,10 @@ class MarioExtravaganza:
 		nameLst = names.replace(" ","").split(",")
 		teamCt = len(nameLst) / 2
 
-		# validate that the team count is a multiple of 48
+		# validate that the team count is a factor of 48, 
+		# greater than 0 and is an integer
 		# throw exception if it isn't
-		if teamCt > 0 and 48 % teamCt == 0:
+		if teamCt.is_integer() and teamCt > 0 and 48 % teamCt == 0:
 			dictLst = list()
 
 			for i in range(0, len(nameLst), 2):
@@ -21,7 +22,7 @@ class MarioExtravaganza:
 				teamDict = {'0': team[0], '1': team[1]} 
 				dictLst.append(teamDict)
 		else:
-			raise Exception("The number of teams must be a multiple of 48!!")
+			raise Exception("The number of teams must be a factor of 48!!")
 		
 		return dictLst
 
@@ -55,17 +56,40 @@ class MarioExtravaganza:
 		return lineup
 
 				
-	# combines team list to string where each line is a race
-	# and the lineup for the race
-	def displayTeams(self, teams: List[List[str]]) -> str:
-		displayStr = ""
+	# writes each race lineup as a csv row to stringio
+	# stringio data is returned to be downloaded by client
+	def fileDataBuild(self, teams: List[List[str]]) -> IO[str]:
+		# build stringio object and set csv writer
+		# to write to stringio object
+		data = io.StringIO()
+		writer = csv.writer(data)
 		count = 0
 
+		# loop through each line in teams list
 		for team in teams:
 			count += 1
-			tmpStr = ", ".join(team)
 
-			displayStr += "Race {}: {}\n".format(count, tmpStr)
-			tmpStr = ""
+			# create row list, first index is race number
+			# proceeding indexes are team lineups
+			row = ["Race {}".format(count)]
+			row.extend(team)
 
-		return displayStr
+			# write row to stringio, then move byte offset to 
+			# beginning of memory stream
+			writer.writerow(row)
+			yield data.getvalue()
+			data.seek(0)
+			data.truncate(0)
+		
+		return data
+
+	# runs all methods to gather data from user, process data
+	# and return final data to be downloaded as file.
+	def process(self, request: requests) -> IO[str]:
+		# create empty StringIO object
+		fileData = io.StringIO()
+		players = request.form["players"]
+		builtLst = self.listBuild(players)
+		shuffledTeams = self.lineupBuild(builtLst)
+		fileData = self.fileDataBuild(shuffledTeams)
+		return fileData

@@ -1,0 +1,20 @@
+{% extends "bootstrap/base.html" %}
+{% block html %}
+    {% block body %}
+    <body background="{{ url_for('static', filename='mariokart.jpg')}}" style="background-size: cover; background-repeat: no-repeat">
+        {% block head %}
+            <title>Mario Kart Extravaganza</title>
+            {% block styles %}
+                {{super()}}
+            {% endblock styles %}
+        {% endblock head %}
+        <div class="outter-div container">
+            <div class="row">
+                <div class="col-md-6 col-md-offset-3 column">
+                    {% block content %}{% endblock content %}
+                </div>
+            </div>
+        </div>
+    </body>
+    {% endblock body %}
+{% endblock html %}
