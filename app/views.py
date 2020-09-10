@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, url_for, flash, redirect, Response, session, send_from_directory
 from flask_bootstrap import Bootstrap
 import os
-from classes.MarioExtravaganza import MarioExtravaganza
+from app.classes.MarioExtravaganza import MarioExtravaganza
 
 app = Flask(__name__)
 Bootstrap(app)
