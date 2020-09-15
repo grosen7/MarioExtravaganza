@@ -1,2 +1,2 @@
 # MarioExtravaganza
-Web application to build random race lineups for a 48 mario kart race extravaganza. Visit https://mariokart-extravaganza.herokuapp.com/ to use the application.
+Web application to build random race lineups for a 48 mario kart race extravaganza. Visit https://mariokart-extravaganza.herokuapp.com/ to use the application. Players names must be comma seperated. Teams are formed by grouping the n1 & n2, n3 & n4, etc... names together, so there should be at least 4 players entered. Player count must be a factor of 48. Note, this is still very much a work in progress!
